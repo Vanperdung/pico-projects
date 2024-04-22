@@ -67,30 +67,39 @@
 #define LCD_ON 1
 
 // Command codes:
-#define COL_ADDR_SET 0x2A
-#define ROW_ADDR_SET 0x2B
-#define MEM_WR 0x2C
-#define MEM_WR_CONT 0x3C
-#define COLOR_MODE 0x3A
-#define COLOR_MODE_12_BIT 0x03
-#define COLOR_MODE_16_BIT 0x05
-#define COLOR_MODE_18_BIT 0x06
-#define SLPIN 0x10
-#define SLPOUT 0x11
+#define LCD_CMD_COL_ADDR_SET 0x2A
+#define LCD_CMD_ROW_ADDR_SET 0x2B
+#define LCD_CMD_MEM_WR 0x2C
+#define LCD_CMD_MEM_WR_CONT 0x3C
+#define LCD_CMD_COLOR_MODE 0x3A
+#define LCD_CMD_COLOR_MODE_12_BIT 0x03
+#define LCD_CMD_COLOR_MODE_16_BIT 0x05
+#define LCD_CMD_COLOR_MODE_18_BIT 0x06
+#define LCD_CMD_SLPIN 0x10
+#define LCD_CMD_SLPOUT 0x11
 
 
-#define SET_LCD_FUNC(blanking_on_func, blanking_off_func, write_cmd_func, \
-                    write_data_func, control_reset_func, control_data_cmd_func, \
-                    control_chip_select_func) \
+#define SET_LCD_FUNC(init_func, blanking_on_func, blanking_off_func, write_cmd_func, \
+                    write_data_func, write_byte_func, control_reset_func, control_data_cmd_func, \
+                    write_func, control_chip_select_func, sleep_func, set_frame_func) \
 { \
+    .init = init_func, \
     .blanking_on = blanking_on_func, \
     .blanking_off = blanking_off_func, \
     .write_cmd = write_cmd_func, \
     .write_data = write_data_func, \
+    .write_byte = write_byte_func, \
+    .write = write_func, \
     .control_reset = control_reset_func, \
     .control_data_cmd = control_data_cmd_func, \
     .control_chip_select = control_chip_select_func \
+    .sleep = sleep_func, \
+    .set_frame = set_frame_func, \
 } 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef unsigned int uint;
 
@@ -103,13 +112,38 @@ typedef struct
 
 typedef struct 
 {
+    uint X;
+    uint Y;
+} lcd_position;
+
+typedef struct
+{
+    lcd_position start;
+    lcd_position end;
+} lcd_frame;
+
+typedef struct 
+{
+    void (*spi_tx)();
+    void (*spi_rx)();
+} lcd_spi_cfg;
+
+
+typedef struct 
+{
+    void (*init)(void);
     void (*blanking_on)(const lcd_io_cfg *config);
     void (*blanking_off)(const lcd_io_cfg *config);
-    void (*write_cmd)(const lcd_io_cfg *lcd_io, const lcd_func_cfg *lcd_func, uint cmd);
-    void (*write_data)(const lcd_io_cfg *lcd_io, const lcd_func_cfg *lcd_func, uint cmd, size_t len);
+    void (*write_cmd)(const lcd_io_cfg *lcd_io, const lcd_func_cfg *lcd_func, uint8_t cmd);
+    void (*write_data)(const lcd_io_cfg *lcd_io, const lcd_func_cfg *lcd_func, uint8_t *data, size_t len);
+    void (*write_byte)(const lcd_io_cfg *lcd_io, const lcd_func_cfg *lcd_func, uint8_t val);
+    void (*write)(const lcd_io_cfg *lcd_io, const lcd_func_cfg *lcd_func, uint8_t *data, size_t len);
     void (*control_reset)(const lcd_io_cfg *lcd_io, bool val);
     void (*control_data_cmd)(const lcd_io_cfg *lcd_io, bool val);
     void (*control_chip_select)(const lcd_io_cfg *lcd_io, bool val);
+    void (*sleep)(uint ms);
+    void (*set_frame)(const lcd_io_cfg *lcd_io, const lcd_func_cfg *lcd_func, lcd_frame frame);
+    lcd_spi_cfg spi;
     // get_framebuffer
     // set_brightness
     // set_contrast
@@ -118,5 +152,8 @@ typedef struct
     // set_orientation
 } lcd_func_cfg;
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
