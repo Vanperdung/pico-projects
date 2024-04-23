@@ -122,28 +122,17 @@ typedef struct
     lcd_position end;
 } lcd_frame;
 
-typedef struct 
-{
-    void (*spi_tx)();
-    void (*spi_rx)();
-} lcd_spi_cfg;
-
 struct lcd_func_cfg; // similar typedef struct lcd_func_cfg { ... } lcd_func_cfg;
 typedef struct
 {
-    void (*init)(void);
-    void (*blanking_on)(const lcd_io_cfg *lcd_io);
-    void (*blanking_off)(const lcd_io_cfg *lcd_io);
-    void (*write_cmd)(const lcd_io_cfg *lcd_io, uint8_t cmd);
-    void (*write_data)(const lcd_io_cfg *lcd_io, uint8_t *data, size_t len);
-    void (*write_byte)(const lcd_io_cfg *lcd_io, uint8_t val);
-    void (*write)(const lcd_io_cfg *lcd_io, uint8_t *data, size_t len);
-    void (*control_reset)(const lcd_io_cfg *lcd_io, bool val);
-    void (*control_data_cmd)(const lcd_io_cfg *lcd_io, bool val);
-    void (*control_chip_select)(const lcd_io_cfg *lcd_io, bool val);
+    void (*blanking_on)();
+    void (*blanking_off)();
+    void (*control_reset)(bool val);
+    void (*control_data_cmd)(bool val);
+    void (*control_chip_select)(bool val);
     void (*sleep)(uint ms);
-    void (*set_frame)(const lcd_io_cfg *lcd_io, lcd_frame frame);
-    lcd_spi_cfg spi;
+    void (*spi_tx)();
+    void (*spi_rx)();
     // get_framebuffer
     // set_brightness
     // set_contrast
@@ -153,6 +142,14 @@ typedef struct
 } lcd_func_cfg;
 
 void lcd_set_func(const lcd_func_cfg *p_lcd_func);
+void lcd_set_io(const lcd_io_cfg *p_lcd_io);
+void lcd_write_cmd(uint8_t cmd);
+void lcd_write_data(uint8_t *data, size_t len);
+void lcd_write_byte(uint8_t val);
+void lcd_write(uint8_t *data, size_t len);
+void lcd_write_continuos(uint8_t *data, size_t len);
+void lcd_init(void);
+void lcd_set_frame(lcd_frame frame);
 
 #ifdef __cplusplus
 }
