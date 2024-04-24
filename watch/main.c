@@ -11,6 +11,7 @@ int main(void)
     stdio_init_all();
     hal_uart_init();
     lv_init();
+    printf("-------------------Setup done-------------------\r\n");
     
     while (1)
     {
