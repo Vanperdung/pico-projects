@@ -2,10 +2,6 @@
 option(LV_LVGL_H_INCLUDE_SIMPLE
        "Use #include \"lvgl.h\" instead of #include \"../../lvgl.h\"" ON)
 
-# Option to define LV_CONF_INCLUDE_SIMPLE, default: ON
-option(LV_CONF_INCLUDE_SIMPLE
-       "Use #include \"lv_conf.h\" instead of #include \"../../lv_conf.h\"" ON)
-
 # Option LV_CONF_PATH, which should be the path for lv_conf.h
 # If set parent path LV_CONF_DIR is added to includes
 if( LV_CONF_PATH )
