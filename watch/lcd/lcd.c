@@ -330,3 +330,37 @@ void lcd_set_frame(lcd_frame frame)
     data[3] = frame.end.Y & 0xFF;
     lcd_write_data(data, sizeof(data));
 }
+
+/*
+    Set resolution and scaning method of the screen
+*/
+void lcd_set_attributes(uint8_t scan_dir)
+{
+    uint8_t mem_access_reg = 0x08;
+
+    if (scan_dir == HORIZONTAL)
+    {
+        mem_access_reg = 0xc8;
+    }
+    else 
+    {
+        mem_access_reg = 0x68;
+    }
+
+    lcd_write_cmd(0x36);
+    lcd_write_byte(mem_access_reg);
+}
+
+
+void lcd_clear_screen(uint16_t color)
+{
+    uint16_t i;
+    // uint16_t image[LCD_HEIGHT * LCD_WIDTH];
+
+    for (i = 0; i < LCD_HEIGHT * LCD_WIDTH; i++)
+    {
+        image[i] = color;
+    }
+
+    lcd_set_frame(0, )
+}
