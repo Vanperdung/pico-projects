@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 include_directories("clock")
 include_directories("gpio")
 include_directories("lcd")
