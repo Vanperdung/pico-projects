@@ -32,7 +32,6 @@ jobs:
 
     - name: Configure
       run: |
-        ls ${{github.workspace}}/pico-sdk
         sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
         cmake -B ${{github.workspace}}/build -DPICO_SDK_PATH=${{github.workspace}}/pico-sdk
 
