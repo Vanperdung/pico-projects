@@ -1,7 +1,7 @@
 #ifndef _SW_SPI_H_
 #define _SW_SPI_H_
 
-#include "../devicetree.h"
+#include <stdio.h>
 
 typedef unsigned int uint;
 
