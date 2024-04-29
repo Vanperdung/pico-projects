@@ -352,15 +352,15 @@ void lcd_set_attributes(uint8_t scan_dir)
 }
 
 
-void lcd_clear_screen(uint16_t color)
-{
-    uint16_t i;
-    // uint16_t image[LCD_HEIGHT * LCD_WIDTH];
+// void lcd_clear_screen(uint16_t color)
+// {
+//     uint16_t i;
+//     // uint16_t image[LCD_HEIGHT * LCD_WIDTH];
 
-    for (i = 0; i < LCD_HEIGHT * LCD_WIDTH; i++)
-    {
-        image[i] = color;
-    }
+//     for (i = 0; i < LCD_HEIGHT * LCD_WIDTH; i++)
+//     {
+//         image[i] = color;
+//     }
 
-    lcd_set_frame(0, )
-}
+//     lcd_set_frame(0, )
+// }

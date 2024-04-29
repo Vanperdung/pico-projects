@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
-#include "lcd/lcd.h"
+#include "lcd/sw_lcd.h"
 #include "lvgl/lvgl.h"
-#include "hal/hal_lcd.h"
-#include "hal/hal_uart.h"
-#include "hal/hal_timer.h"
+#include "uart/sw_uart.h"
+#include "timer/sw_timer.h"
 
 static struct repeating_timer lvgl_timer;
 
@@ -18,8 +17,8 @@ static bool repeating_lvgl_timer_callback(struct repeating_timer *timer)
 int main(void)
 {
     stdio_init_all();
-    hal_uart_init();
-    hal_repeating_timer_init(-5, repeating_lvgl_timer_callback, NULL, &lvgl_timer);
+    sw_uart_init();
+    sw_repeating_timer_init(-5, repeating_lvgl_timer_callback, NULL, &lvgl_timer);
     lv_init();
     
     while (1)

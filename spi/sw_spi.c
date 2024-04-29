@@ -20,7 +20,6 @@ uint sw_spi_init(uint baudrate)
 
     gpio_set_function(LCD_SPI_CLK, GPIO_FUNC_SPI);
     gpio_set_function(LCD_SPI_MOSI, GPIO_FUNC_SPI);
-
-    
+    return ret;
 }
 

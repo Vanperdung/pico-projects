@@ -4,6 +4,7 @@
 #include "hardware/clocks.h"
 #include "hardware/structs/pll.h"
 #include "hardware/structs/clocks.h"
+#include "sw_clock.h"
 
 void sw_measure_freqs(void)
 {

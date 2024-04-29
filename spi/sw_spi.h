@@ -5,7 +5,7 @@
 
 typedef unsigned int uint;
 
-void sw_spi_init(uint baudrate);
+uint sw_spi_init(uint baudrate);
 
 
 #endif

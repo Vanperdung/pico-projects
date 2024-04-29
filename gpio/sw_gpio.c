@@ -8,7 +8,7 @@
 void sw_gpio_mode_init(uint16_t pin, uint16_t mode)
 {
     gpio_init(pin);
-    gpio_set_dir(mode);
+    gpio_set_dir(pin, mode);
 }
 
 void sw_gpio_write(uint16_t pin, uint8_t value)
