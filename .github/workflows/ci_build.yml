@@ -6,27 +6,41 @@ on:
   pull_request:
     branches: [ "master" ]
 
-# env:
-#   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-#   BUILD_TYPE: Release
-
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Pico SDK
-      uses: actions/checkout@v2
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v2
       with:
-        repository: https://github.com/raspberrypi/pico-sdk.git
-        path: pico-sdk
+        cmake-version: '3.16.x'
 
-    - name: Configure CMake and build
-      run: | 
-        mkdir -p build 
-        cd build 
-        cmake -DPICO_SDK_PATH=${{github.workspace}}/pico-sdk/ ..
+    - name: Use CMake
+      run: cmake --version
 
+    - name: Checkout SWatch
+      uses: actions/checkout@v4
+      with:
+        repository: Vanperdung/pico-swatch
+        path: ${{github.workspace}}
+
+    - name: Checkout Pico SDK
+      uses: actions/checkout@v4
+      with:
+        repository: raspberrypi/pico-sdk
+        path: ${{github.workspace}}/pico-sdk
+
+    - name: Configure
+      run: |
+        ls ${{github.workspace}}/pico-sdk
+        sudo apt install gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
+        cmake -B ${{github.workspace}}/build -DPICO_SDK_PATH=${{github.workspace}}/pico-sdk
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build 
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sw-artifact
+        path: ${{github.workspace}}/build/swatch.uf2
