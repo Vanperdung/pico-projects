@@ -66,6 +66,12 @@
 #define LCD_OFF 0
 #define LCD_ON 1
 
+#define HORIZONTAL 0
+#define VERTICAL   1
+
+#define LCD_HEIGHT 240
+#define LCD_WIDTH 240
+
 // Command codes:
 #define LCD_CMD_COL_ADDR_SET 0x2A
 #define LCD_CMD_ROW_ADDR_SET 0x2B
@@ -108,6 +114,7 @@ typedef struct
     uint reset_pin;
     uint dc_pin;
     uint cs_pin;
+    uint bl_pin;
 } lcd_io_cfg;
 
 typedef struct 
