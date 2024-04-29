@@ -18,6 +18,11 @@ void hal_lcd_hardware_init(const lcd_io_cfg *p_lcd_io)
     lcd_set_io(p_lcd_io);
 }
 
+void hal_lcd_gpio_init(const lcd_io_cfg *p_lcd_io)
+{
+    
+}
+
 void hal_lcd_init_cmd(void)
 {
     lcd_init();

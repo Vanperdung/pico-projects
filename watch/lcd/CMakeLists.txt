@@ -1,1 +1,1 @@
-add_library(lcd lcd.c)
+add_library(sw_lcd lcd.c)

@@ -114,6 +114,7 @@ typedef struct
     uint reset_pin;
     uint dc_pin;
     uint cs_pin;
+    uint bl_pin;
 } lcd_io_cfg;
 
 typedef struct 
