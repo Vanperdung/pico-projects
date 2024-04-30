@@ -31,3 +31,19 @@ uint sw_spi_dma_init(uint baudrate)
 
     return ret;
 }
+
+uint sw_spi_init(uint baudrate)
+{
+    uint ret;
+    ret = spi_init(SPI_ID, baudrate);
+    printf("SPI baudrate = %d\r\n", ret);
+
+    gpio_set_function(LCD_SPI_CLK, GPIO_FUNC_SPI);
+    gpio_set_function(LCD_SPI_MOSI, GPIO_FUNC_SPI);
+    return ret;
+}
+
+void sw_spi_write_bytes(uint8_t *data, uint len)
+{
+    spi_write_blocking(SPI_ID, data, len);
+}

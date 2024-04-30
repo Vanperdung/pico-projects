@@ -21,3 +21,22 @@ uint8_t sw_gpio_read(uint16_t pin)
     return gpio_get(pin);
 }
 
+void sw_gpio_set_bl(bool value)
+{
+    gpio_put(LCD_BL, (uint8_t)value);
+}
+
+void sw_gpio_set_reset(bool value)
+{
+    gpio_put(LCD_RST, (uint8_t)value);
+}
+
+void sw_gpio_set_dc(bool value)
+{
+    gpio_put(LCD_DC, (uint8_t)value);
+}
+
+void sw_gpio_set_cs(bool value)
+{
+    gpio_put(LCD_SPI_CS, (uint8_t)value);
+}

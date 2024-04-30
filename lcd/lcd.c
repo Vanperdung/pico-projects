@@ -1,3 +1,9 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
+#include <stdlib.h>
 #include "lcd.h"
 
 lcd_func_cfg lcd_func = {0};
@@ -13,26 +19,11 @@ void lcd_set_io(const lcd_io_cfg *p_lcd_io)
     memcpy(&lcd_io, p_lcd_io, sizeof(lcd_io_cfg));
 }
 
-// void lcd_control_reset(bool val)
-// {
-//     gpio_put(lcd_io->reset_pin, val);
-// }
-
-// void lcd_control_data_cmd(bool val)
-// {
-//     gpio_put(lcd_io->dc_pin, val);
-// }
-
-// void lcd_control_chip_select(bool val)
-// {
-//     gpio_put(lcd_io->cs_pin, val);
-// }
-
 void lcd_write_cmd(uint8_t cmd)
 {
     lcd_func.control_data_cmd(LCD_OFF);
     lcd_func.control_chip_select(LCD_OFF);
-    // TODO spi_tx(&cmd, sizeof(cmd))
+    lcd_func.spi_tx(&cmd, 1);
     lcd_func.control_chip_select(LCD_ON);
 }
 
@@ -40,13 +31,13 @@ void lcd_write_data(uint8_t *data, size_t len)
 {
     lcd_func.control_data_cmd(LCD_ON);
     lcd_func.control_chip_select(LCD_OFF);
-    // TODO spi_tx(data, len)
+    lcd_func.spi_tx(data, len);
     lcd_func.control_chip_select(LCD_ON);
 }
 
 void lcd_write_byte(uint8_t val)
 {
-    lcd_write_data(&val, sizeof(val));
+    lcd_write_data(&val, 1);
 }
 
 void lcd_write(uint8_t *data, size_t len)
@@ -61,17 +52,20 @@ void lcd_write_continuos(uint8_t *data, size_t len)
     lcd_write_data(data, len);
 }
 
-void lcd_init(void)
+void lcd_reset(void)
 {
-    lcd_func.control_chip_select(LCD_ON);
-    lcd_func.sleep(5);
+    lcd_func.control_reset(LCD_ON);
+    lcd_func.sleep(100);
     lcd_func.control_reset(LCD_OFF);
-    lcd_func.sleep(10);
-    lcd_func.control_reset(LCD_OFF);
-    lcd_func.sleep(120);
+    lcd_func.sleep(100);
+    lcd_func.control_reset(LCD_ON);
+    lcd_func.control_chip_select(LCD_OFF);
+    lcd_func.sleep(100);
+}
 
+void lcd_init_reg(void)
+{
     lcd_write_cmd(0xEF);
-
     lcd_write_cmd(0xEB);
     lcd_write_byte(0x14);
 
@@ -119,22 +113,13 @@ void lcd_init(void)
 
     lcd_write_cmd(0xB6);
     lcd_write_byte(0x00);
-    lcd_write_byte(0x00);
+    lcd_write_byte(0x20);
 
     lcd_write_cmd(0x36);
-
-#if ORIENTATION == 0
-    lcd_write_byte(0x18);
-#elif ORIENTATION == 1
-    lcd_write_byte(0x28);
-#elif ORIENTATION == 2
-    lcd_write_byte(0x48);
-#else
-    lcd_write_byte(0x88);
-#endif
+    lcd_write_byte(0x08);
 
     lcd_write_cmd(LCD_CMD_COLOR_MODE);
-    lcd_write_byte(LCD_CMD_COLOR_MODE_18_BIT);
+    lcd_write_byte(LCD_CMD_COLOR_MODE_16_BIT);
 
     lcd_write_cmd(0x90);
     lcd_write_byte(0x08);
@@ -329,6 +314,9 @@ void lcd_set_frame(lcd_frame frame)
     data[2] = (frame.end.Y >> 8) & 0xFF;
     data[3] = frame.end.Y & 0xFF;
     lcd_write_data(data, sizeof(data));
+
+    lcd_write_cmd(LCD_CMD_MEM_WR);
+    lcd_func.control_data_cmd(LCD_ON);
 }
 
 /*
@@ -351,16 +339,53 @@ void lcd_set_attributes(uint8_t scan_dir)
     lcd_write_byte(mem_access_reg);
 }
 
+void lcd_clear_screen(lcd_frame frame, uint16_t color)
+{
+    uint16_t row_pixels[LCD_WIDTH] = {0};
 
-// void lcd_clear_screen(uint16_t color)
-// {
-//     uint16_t i;
-//     // uint16_t image[LCD_HEIGHT * LCD_WIDTH];
+    color = ((color << 8) & 0xFF00) | (color >> 8);
 
-//     for (i = 0; i < LCD_HEIGHT * LCD_WIDTH; i++)
-//     {
-//         image[i] = color;
-//     }
+    for (uint32_t j = 0; j < LCD_WIDTH; j++)
+    {
+        row_pixels[j] = color;
+    }
 
-//     lcd_set_frame(0, )
-// }
+    lcd_set_frame(frame);
+    lcd_write_data((uint8_t *)row_pixels, LCD_WIDTH * 2);
+}
+
+void lcd_display_fullscreen(lcd_frame frame, uint16_t *image)
+{
+    lcd_set_frame(frame);
+    for (uint32_t j = 0; j < LCD_HEIGHT; j++) 
+    {
+        lcd_write_data((uint8_t *)&image[j * LCD_WIDTH], LCD_WIDTH * 2);
+    }
+}
+
+void lcd_display_partial(lcd_frame frame, uint16_t *image)
+{
+    uint32_t addr;
+
+    lcd_set_frame(frame);
+    for (uint32_t j = frame.start.Y; j < frame.end.Y; j++) 
+    {
+        addr = frame.start.X + j * LCD_WIDTH;
+        lcd_write_data((uint8_t *)&image[addr], (frame.end.X - frame.start.X) * 2);
+    }
+}
+
+void lcd_display_point(uint16_t X, uint16_t Y, uint16_t color)
+{
+    lcd_frame frame = {{X, Y}, {X, Y}};
+
+    lcd_set_frame(frame);
+    lcd_write_data((uint8_t *)&color, sizeof(color));
+}
+
+void lcd_init(uint8_t scan_dir)
+{
+    lcd_reset();
+    lcd_set_attributes(scan_dir);
+    lcd_init_reg();
+}

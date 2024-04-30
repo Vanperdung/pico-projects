@@ -67,10 +67,32 @@
 #define LCD_ON 1
 
 #define HORIZONTAL 0
-#define VERTICAL   1
+#define VERTICAL 1
 
 #define LCD_HEIGHT 240
 #define LCD_WIDTH 240
+
+#define WHITE 0xFFFF
+#define BLACK 0x0000
+#define BLUE 0x001F
+#define BRED 0XF81F
+#define GRED 0XFFE0
+#define GBLUE 0X07FF
+#define RED 0xF800
+#define MAGENTA 0xF81F
+#define GREEN 0x07E0
+#define CYAN 0x7FFF
+#define YELLOW 0xFFE0
+#define BROWN 0XBC40
+#define BRRED 0XFC07
+#define GRAY 0X8430
+#define DARKBLUE 0X01CF
+#define LIGHTBLUE 0X7D7C
+#define GRAYBLUE 0X5458
+#define LIGHTGREEN 0X841F
+#define LGRAY 0XC618
+#define LGRAYBLUE 0XA651
+#define LBBLUE 0X2B12
 
 // Command codes:
 #define LCD_CMD_COL_ADDR_SET 0x2A
@@ -84,32 +106,27 @@
 #define LCD_CMD_SLPIN 0x10
 #define LCD_CMD_SLPOUT 0x11
 
+#define SET_LCD_FUNC(control_blanking_func,                     \
+                     control_reset_func, control_data_cmd_func, \
+                     control_chip_select_func, sleep_func,      \
+                     spi_tx_func, spi_rx_func)                  \
+    {                                                           \
+        .control_blanking = control_blanking_func,              \
+        .control_reset = control_reset_func,                    \
+        .control_data_cmd = control_data_cmd_func,              \
+        .control_chip_select = control_chip_select_func,        \
+        .sleep = sleep_func,                                    \
+        .spi_tx = spi_tx_func,                                  \
+        .spi_rx = spi_rx_func,                                  \
+    }
 
-#define SET_LCD_FUNC(init_func, blanking_on_func, blanking_off_func, write_cmd_func, \
-                    write_data_func, write_byte_func, control_reset_func, control_data_cmd_func, \
-                    write_func, control_chip_select_func, sleep_func, set_frame_func) \
-{ \
-    .init = init_func, \
-    .blanking_on = blanking_on_func, \
-    .blanking_off = blanking_off_func, \
-    .write_cmd = write_cmd_func, \
-    .write_data = write_data_func, \
-    .write_byte = write_byte_func, \
-    .write = write_func, \
-    .control_reset = control_reset_func, \
-    .control_data_cmd = control_data_cmd_func, \
-    .control_chip_select = control_chip_select_func \
-    .sleep = sleep_func, \
-    .set_frame = set_frame_func, \
-}       
-
-#define SET_LCD_IO(reset, dc, cs, bl) \ 
-{ \ 
-    .reset_pin = reset, \
-    .dc_pin = dc, \
-    .cs_pin = cs, \
-    .bl_pin = bl \
-}
+#define SET_LCD_IO(reset, dc, cs, bl) \
+    {                                 \
+        .reset_pin = reset,           \
+        .dc_pin = dc,                 \
+        .cs_pin = cs,                 \
+        .bl_pin = bl                  \
+    }
 
 typedef unsigned int uint;
 
@@ -121,7 +138,7 @@ typedef struct
     uint bl_pin;
 } lcd_io_cfg;
 
-typedef struct 
+typedef struct
 {
     uint X;
     uint Y;
@@ -136,14 +153,13 @@ typedef struct
 struct lcd_func_cfg; // similar typedef struct lcd_func_cfg { ... } lcd_func_cfg;
 typedef struct
 {
-    void (*blanking_on)();
-    void (*blanking_off)();
+    void (*control_blanking)(bool val);
     void (*control_reset)(bool val);
     void (*control_data_cmd)(bool val);
     void (*control_chip_select)(bool val);
-    void (*sleep)(uint ms);
-    void (*spi_tx)();
-    void (*spi_rx)();
+    void (*sleep)(uint32_t ms);
+    void (*spi_tx)(uint8_t *data, uint len);
+    void (*spi_rx)(uint8_t *data, uint len);
     // get_framebuffer
     // set_brightness
     // set_contrast
@@ -159,7 +175,12 @@ void lcd_write_data(uint8_t *data, size_t len);
 void lcd_write_byte(uint8_t val);
 void lcd_write(uint8_t *data, size_t len);
 void lcd_write_continuos(uint8_t *data, size_t len);
-void lcd_init(void);
+void lcd_init_reg(void);
+void lcd_init(uint8_t scan_dir);
 void lcd_set_frame(lcd_frame frame);
-
+void lcd_display_point(uint16_t X, uint16_t Y, uint16_t color);
+void lcd_display_partial(lcd_frame frame, uint16_t *image);
+void lcd_display_fullscreen(lcd_frame frame, uint16_t *image);
+void lcd_clear_screen(lcd_frame frame, uint16_t color);
+void lcd_set_attributes(uint8_t scan_dir);
 #endif
