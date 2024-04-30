@@ -2,7 +2,7 @@
 #define _DEVICE_TREE_H_
 
 #define LCD_UART_ID uart0
-#define LCD_UART_BAUDRATE 912000
+#define LCD_UART_BAUDRATE 115200
 
 #define LCD_UART_TX 16
 #define LCD_UART_RX 17

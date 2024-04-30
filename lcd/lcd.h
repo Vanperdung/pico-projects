@@ -101,11 +101,15 @@
     .control_chip_select = control_chip_select_func \
     .sleep = sleep_func, \
     .set_frame = set_frame_func, \
-} 
+}       
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define SET_LCD_IO(reset, dc, cs, bl) \ 
+{ \ 
+    .reset_pin = reset, \
+    .dc_pin = dc, \
+    .cs_pin = cs, \
+    .bl_pin = bl \
+}
 
 typedef unsigned int uint;
 
@@ -157,9 +161,5 @@ void lcd_write(uint8_t *data, size_t len);
 void lcd_write_continuos(uint8_t *data, size_t len);
 void lcd_init(void);
 void lcd_set_frame(lcd_frame frame);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
