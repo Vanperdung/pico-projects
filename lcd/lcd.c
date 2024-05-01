@@ -351,7 +351,11 @@ void lcd_clear_screen(lcd_frame frame, uint16_t color)
     }
 
     lcd_set_frame(frame);
-    lcd_write_data((uint8_t *)row_pixels, LCD_WIDTH * 2);
+
+    for (uint32_t j = 0; j < LCD_HEIGHT; j++)
+    {
+        lcd_write_data((uint8_t *)row_pixels, LCD_WIDTH * 2);
+    }
 }
 
 void lcd_display_fullscreen(lcd_frame frame, uint16_t *image)
