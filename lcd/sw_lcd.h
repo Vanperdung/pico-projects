@@ -9,4 +9,5 @@ void sw_lcd_clear_screen(lcd_frame frame, uint16_t color);
 void sw_lcd_display_point(uint16_t X, uint16_t Y, uint16_t color);
 void sw_lcd_display_partial(lcd_frame frame, uint16_t *image);
 void sw_lcd_display_fullscreen(lcd_frame frame, uint16_t *image);
+void sw_lcd_set_screen(lcd_frame frame);
 #endif

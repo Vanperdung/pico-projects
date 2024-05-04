@@ -46,3 +46,8 @@ void sw_lcd_display_fullscreen(lcd_frame frame, uint16_t *image)
 {
     lcd_display_fullscreen(frame, image);
 }
+
+void sw_lcd_set_screen(lcd_frame frame)
+{
+    lcd_set_frame(frame);
+}

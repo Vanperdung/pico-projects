@@ -9,14 +9,8 @@
 #include "gpio/sw_gpio.h"
 #include "spi/sw_spi.h"
 #include "clock/sw_clock.h"
+#include "hal/hal_lvgl.h"
 #include "devicetree.h"
-static struct repeating_timer lvgl_timer;
-
-static bool repeating_lvgl_timer_callback(struct repeating_timer *timer)
-{
-    lv_tick_inc(5);
-    return true;
-}
 
 int main(void)
 {
@@ -34,12 +28,11 @@ int main(void)
     sw_spi_dma_init(270000 * 1000);
     sw_lcd_gpio_init(&lcd_io);
     sw_lcd_init(&lcd_func_cfg, HORIZONTAL);
+    sw_lcd_clear_screen(frame, WHITE);
 
-    // Software configurations;
-    sw_repeating_timer_init(-5, repeating_lvgl_timer_callback, NULL, &lvgl_timer);
-    lv_init();
+    // Software configurations
+    hal_lvgl_init();
 
-    sw_lcd_clear_screen(frame, RED);
     while (1)
     {
         lv_timer_handler();
